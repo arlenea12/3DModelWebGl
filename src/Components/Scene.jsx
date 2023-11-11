@@ -4,10 +4,10 @@ import { Environment, PresentationControls } from "@react-three/drei";
 import { useControls } from "leva";
 import Loader from "./Loader";
 
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 const Room = () => {
-  const fbx = useLoader(FBXLoader, "/G.fbx");
+  const { scene } = useLoader(GLTFLoader, "/model/scene.gltf");
 
   // these are the controls for the model
   const { upDown, rightLeft, nearFar, rotation } = useControls("Model", {
@@ -30,8 +30,8 @@ const Room = () => {
     },
   });
 
-  //traverse fbx
-  fbx.traverse((child) => {
+  // //traverse fbx
+  scene.traverse((child) => {
     //turn off model lights
     if (child.isLight) {
       // Disable lights
@@ -44,17 +44,12 @@ const Room = () => {
         child.material.opacity = 0;
       }
     }
-    console.log(child.name);
   });
 
   return (
-    <group
-      position={[rightLeft, upDown, nearFar]}
-      rotation={rotation}
-      scale={0.01}
-    >
+    <group position={[rightLeft, upDown, nearFar]} rotation={rotation}>
       <PresentationControls>
-        <primitive object={fbx} />
+        <primitive object={scene} />
       </PresentationControls>
     </group>
   );
@@ -72,11 +67,9 @@ function Scene() {
       {/* this is the 3d scene */}
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
         {/* lighting */}
-        <ambientLight intensity={3} />
+        <ambientLight intensity={0.3} />
 
-        <directionalLight position={[0, 10, 5]} intensity={8} />
-        <directionalLight position={[0, 50, 5]} intensity={4} />
-        <directionalLight position={[-10, 10, 5]} intensity={4} />
+        <directionalLight position={[0, 10, 5]} />
 
         {/* orbit controls */}
         <Environment preset='sunset' />
